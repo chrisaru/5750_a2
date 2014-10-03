@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="no.uio.inf5750.assignment2.model.Student" table="Students">
+    <id name="id" column="student_id">
+      <generator class="native"/>
+    </id>
+    
+    <property name="name" not-null="true" unique="true"/>
+    
+    <set name="courses" table="student_courses" inverse="true">
+    	<key column="student_id"/>
+    	<many-to-many column="course_id"
+    		class="no.uio.inf5750.assignment2.model.Course"/>
+    </set>
+    
+     <set name="degrees" table="student_degrees">
+    	<key column="student_id"/>
+    	<many-to-many column="degree_id"
+    		class="no.uio.inf5750.assignment2.model.Degree"/>
+    </set>
+    
+  </class>
+</hibernate-mapping>
