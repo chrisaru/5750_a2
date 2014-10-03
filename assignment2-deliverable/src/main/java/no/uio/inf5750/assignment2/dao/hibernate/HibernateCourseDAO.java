@@ -26,7 +26,6 @@ public class HibernateCourseDAO implements CourseDAO {
     
 	@Override
 	public int saveCourse(Course course) {
-		System.out.println(sessionFactory);
 		return (Integer) sessionFactory.getCurrentSession().save(course);
 	}
 
@@ -56,6 +55,7 @@ public class HibernateCourseDAO implements CourseDAO {
 	public void delCourse(Course course) {
 		Session session = sessionFactory.getCurrentSession();
 		session.delete(course);
+		session.flush();
 		//session.createQuery("delete from Courses where course_id = " + course.getId());
 	}
 

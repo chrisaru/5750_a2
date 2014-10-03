@@ -48,6 +48,7 @@ public class HibernateDegreeDAO implements DegreeDAO{
 	public void delDegree(Degree degree) {	
 		Session session = sessionFactory.getCurrentSession();
 		session.delete(degree);
+		session.flush();
 	//	session.createQuery("delete from Courses where course_id = " + degree.getId());
 		//også slette fra lister som har denne ? 
 	}

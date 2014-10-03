@@ -93,7 +93,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public void delCourse(int courseId) {
-		c.delCourse(getCourse(courseId));
+		c.delCourse(c.getCourse(courseId));
 	}
 
 	@Override
@@ -146,94 +146,143 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public void updateDegree(int degreeId, String type) {
-		Degree de = d.getDegree(degreeId);
+		Degree de = getDegree(degreeId);
 		if(de == null) {
 			System.out.println("Error in updatedegree");
 		}
+		de.setType(type);
+		d.saveDegree(de);
 	}
 
 	@Override
 	public Degree getDegree(int degreeId) {
-		// TODO Auto-generated method stub
-		return null;
+		return d.getDegree(degreeId);
 	}
 
 	@Override
 	public Degree getDegreeByType(String type) {
-		// TODO Auto-generated method stub
-		return null;
+		return d.getDegreeByType(type);
 	}
 
 	@Override
 	public Collection<Degree> getAllDegrees() {
-		// TODO Auto-generated method stub
-		return null;
+		return d.getAllDegrees();
 	}
 
 	@Override
 	public void delDegree(int degreeId) {
-		// TODO Auto-generated method stub
-		
+		Degree de = d.getDegree(degreeId);
+		if(de == null) {
+			System.out.println("ERROR in deldegree");
+			return;
+		}
+		d.delDegree(de);
 	}
 
 	@Override
 	public void addRequiredCourseToDegree(int degreeId, int courseId) {
-		// TODO Auto-generated method stub
-		
+		Degree de = getDegree(degreeId);
+		if(de == null) {
+			System.out.println("WRONG DEGREEID IN Add_req_to_course");
+		}
+		Course cs = getCourse(courseId);
+		if(cs == null) {
+			System.out.println("WRONG courseid IN Add_req_to_course");
+		}
+		Set<Course> courses = de.getRequiredCourses();
+		courses.add(cs);
+		de.setRequiredCourses(courses);
+		d.saveDegree(de);
 	}
 
 	@Override
 	public void removeRequiredCourseFromDegree(int degreeId, int courseId) {
-		// TODO Auto-generated method stub
-		
+		Degree de = getDegree(degreeId);
+		if(de == null) {
+			System.out.println("WRONG DEGREEID IN rem_req_to_course");
+		}
+		Course cs = getCourse(courseId);
+		if(cs == null) {
+			System.out.println("WRONG courseid IN rem_req_to_course");
+		}
+		Set<Course> courses = de.getRequiredCourses();
+		courses.remove(cs);
+		de.setRequiredCourses(courses);
+		d.saveDegree(de);
 	}
 
 	@Override
 	public int addStudent(String name) {
-		// TODO Auto-generated method stub
-		return 0;
+		Student stud = new Student(name);
+		return s.saveStudent(stud);
 	}
 
 	@Override
 	public void updateStudent(int studentId, String name) {
-		// TODO Auto-generated method stub
-		
+		Student st = getStudent(studentId);
+		if(st == null) {
+			System.out.println("Error in updatestud");
+		}
+		st.setName(name);
+		s.saveStudent(st);
 	}
 
 	@Override
 	public Student getStudent(int studentId) {
-		// TODO Auto-generated method stub
-		return null;
+		return s.getStudent(studentId);
 	}
 
 	@Override
 	public Student getStudentByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return s.getStudentByName(name);
 	}
 
 	@Override
 	public Collection<Student> getAllStudents() {
-		// TODO Auto-generated method stub
-		return null;
+		return s.getAllStudents();
 	}
 
 	@Override
 	public void delStudent(int studentId) {
-		// TODO Auto-generated method stub
-		
+		Student st = getStudent(studentId);
+		if(st == null) {
+			System.out.println("ERROR in deldegree");
+		}
+		s.delStudent(st);
 	}
 
 	@Override
 	public void addDegreeToStudent(int studentId, int degreeId) {
-		// TODO Auto-generated method stub
+		Student st = getStudent(studentId);
+		if(st == null) {
+			System.out.println("WRONG studid IN Add_degree_to_stud");
+		}
+		Degree de = getDegree(degreeId);
+		if(de == null) {
+			System.out.println("WRONG degreeid IN Add_degree_to_student");
+		}
 		
+		Set<Degree> degrees = st.getDegrees();
+		degrees.add(de);
+		st.setDegrees(degrees);
+		s.saveStudent(st);
 	}
 
 	@Override
 	public void removeDegreeFromStudent(int studentId, int degreeId) {
-		// TODO Auto-generated method stub
+		Student st = getStudent(studentId);
+		if(st == null) {
+			System.out.println("WRONG studid IN Add_degree_to_stud");
+		}
+		Degree de = getDegree(degreeId);
+		if(de == null) {
+			System.out.println("WRONG degreeid IN Add_degree_to_student");
+		}
 		
+		Set<Degree> degrees = st.getDegrees();
+		degrees.add(de);
+		st.setDegrees(degrees);
+		s.saveStudent(st);
 	}
 
 	@Override

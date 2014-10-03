@@ -48,6 +48,7 @@ public class HibernateStudentDAO implements StudentDAO {
 	@Override
 	public void delStudent(Student student) {
 		sessionFactory.getCurrentSession().delete(student);
+		sessionFactory.getCurrentSession().flush();
 		
 	}
 
