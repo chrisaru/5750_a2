@@ -1,10 +1,13 @@
 package no.uio.inf5750.assignment2.service.impl;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 
+import no.uio.inf5750.assignment2.dao.CourseDAO;
+import no.uio.inf5750.assignment2.dao.DegreeDAO;
 import no.uio.inf5750.assignment2.dao.StudentDAO;
 import no.uio.inf5750.assignment2.dao.hibernate.HibernateCourseDAO;
 import no.uio.inf5750.assignment2.dao.hibernate.HibernateDegreeDAO;
@@ -17,10 +20,35 @@ import no.uio.inf5750.assignment2.service.StudentSystem;
 public class DefaultStudentSystem implements StudentSystem  {
 
 	static Logger logger = Logger.getLogger(HibernateStudentDAO.class);
-    private SessionFactory sessionFactory;
-    HibernateCourseDAO c = new HibernateCourseDAO();
-    HibernateDegreeDAO d = new HibernateDegreeDAO();
-    HibernateStudentDAO s = new HibernateStudentDAO();
+    CourseDAO c;
+    DegreeDAO d;
+    public CourseDAO getC() {
+		return c;
+	}
+
+	public void setC(CourseDAO c) {
+		this.c = c;
+	}
+
+	public DegreeDAO getD() {
+		return d;
+	}
+
+	public void setD(DegreeDAO d) {
+		this.d = d;
+	}
+
+	public StudentDAO getS() {
+		return s;
+	}
+
+	public void setS(StudentDAO s) {
+		this.s = s;
+	}
+
+	StudentDAO s;
+    
+    
 	@Override
 	public int addCourse(String courseCode, String name) {
 		Course course = new Course(courseCode, name);
@@ -50,50 +78,78 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public Course getCourseByCourseCode(String courseCode) {
-		// TODO Auto-generated method stub
-		return null;
+		return c.getCourseByCourseCode(courseCode);
 	}
 
 	@Override
 	public Course getCourseByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return c.getCourseByName(name);
 	}
 
 	@Override
 	public Collection<Course> getAllCourses() {
-		// TODO Auto-generated method stub
-		return null;
+		return c.getAllCourses();
 	}
 
 	@Override
 	public void delCourse(int courseId) {
-		// TODO Auto-generated method stub
-		
+		c.delCourse(getCourse(courseId));
 	}
 
 	@Override
 	public void addAttendantToCourse(int courseId, int studentId) {
-		// TODO Auto-generated method stub
-		
+		Course cs = c.getCourse(courseId);
+		if(cs == null) {
+			System.out.println("ERROR\n");
+			return;
+		}
+		Student st = s.getStudent(studentId);
+		if(st == null) {
+			System.out.println("ERROR\n");
+			return;
+		}
+		Set<Student> sSet = cs.getAttendants();
+		//Set<Course> cSet = st.getCourses();
+		sSet.add(st);
+		//cSet.add(cs);
+		cs.setAttendants(sSet);
+		c.saveCourse(cs);
+		//st.setCourses(cSet);
 	}
 
 	@Override
 	public void removeAttendantFromCourse(int courseId, int studentId) {
-		// TODO Auto-generated method stub
-		
+		Course cs = c.getCourse(courseId);
+		if(cs == null) {
+			System.out.println("ERROR\n");
+			return;
+		}
+		Student st = s.getStudent(studentId);
+		if(st == null) {
+			System.out.println("ERROR\n");
+			return;
+		}
+		Set<Student> sSet = cs.getAttendants();
+		//Set<Course> cSet = st.getCourses();
+		sSet.remove(st);
+		//cSet.add(cs);
+		cs.setAttendants(sSet);
+		c.saveCourse(cs);
+		//st.setCourses(cSet);
 	}
 
 	@Override
 	public int addDegree(String type) {
-		// TODO Auto-generated method stub
-		return 0;
+		Degree de = new Degree(type);
+		return d.saveDegree(de);
 	}
 
 	@Override
 	public void updateDegree(int degreeId, String type) {
-		// TODO Auto-generated method stub
-		
+		Degree de = d.getDegree(degreeId);
+		if(de == null) {
+			System.out.println("Error in updatedegree");
+		}
 	}
 
 	@Override

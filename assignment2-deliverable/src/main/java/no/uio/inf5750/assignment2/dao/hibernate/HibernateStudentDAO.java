@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.annotations.Entity;
 
 import no.uio.inf5750.assignment2.dao.StudentDAO;
 import no.uio.inf5750.assignment2.model.Student;
@@ -38,9 +39,10 @@ public class HibernateStudentDAO implements StudentDAO {
 	}
 
 	@Override
+
 	public Collection<Student> getAllStudents() {
 		Session session = sessionFactory.getCurrentSession();
-		return session.createQuery("from Students").list();
+		return (Collection<Student>) session.createQuery("from Student").list();
 	}
 
 	@Override

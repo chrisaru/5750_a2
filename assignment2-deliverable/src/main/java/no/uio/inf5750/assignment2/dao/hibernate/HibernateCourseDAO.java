@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.annotations.Entity;
 
 import no.uio.inf5750.assignment2.dao.CourseDAO;
 import no.uio.inf5750.assignment2.model.Course;
@@ -48,7 +49,7 @@ public class HibernateCourseDAO implements CourseDAO {
 	@Override
 	public Collection<Course> getAllCourses() {
 		Session session = sessionFactory.getCurrentSession();
-		return session.createQuery("from Courses").list();	
+		return (Collection<Course>) session.createQuery("from Course").list();	
 	}
 
 	@Override

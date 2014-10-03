@@ -41,7 +41,7 @@ public class HibernateDegreeDAO implements DegreeDAO{
 	@Override
 	public Collection<Degree> getAllDegrees() {
 		Session session = sessionFactory.getCurrentSession();
-		return session.createQuery("from Courses").list();	
+		return (Collection<Degree>) session.createQuery("from Degree").list();	
 	}
 
 	@Override

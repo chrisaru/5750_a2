@@ -60,10 +60,28 @@
             -->
     </bean>
 
-    <bean id="courseDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateCourseDAO"/>
-    <bean id="degreeDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateDegreeDAO"/>
-    <bean id="studentDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateStudentDAO"/>
-    <bean id="DefaultStudentSystem" class="no.uio.inf5750.assignment2.service.impl.DefaultStudentSystem"/>
+    <bean id="courseDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateCourseDAO">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="degreeDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateDegreeDAO">
+        	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="studentDao" class="no.uio.inf5750.assignment2.dao.hibernate.HibernateStudentDAO">
+        	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="DefaultStudentSystem" class="no.uio.inf5750.assignment2.service.impl.DefaultStudentSystem">
+        	<property name="c"> 
+        	<ref bean="courseDao"/>
+        	</property>
+        	<property name="d"> 
+        	<ref bean="degreeDao"/>
+        	</property>
+        	
+        	<property name="s">
+        	<ref bean="studentDao"/>
+        	</property>
+        	
+    </bean>
         
 
 </beans>
