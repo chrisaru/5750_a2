@@ -13,6 +13,15 @@ public class HibernateStudentDAO implements StudentDAO {
 
 	static Logger logger = Logger.getLogger(HibernateStudentDAO.class);
     private SessionFactory sessionFactory;
+ 
+    public SessionFactory getSessionFactory() {
+ 		return sessionFactory;
+ 	}
+
+ 	public void setSessionFactory(SessionFactory sessionFactory) {
+ 		this.sessionFactory = sessionFactory;
+ 	}
+    
 	@Override
 	public int saveStudent(Student student) {
 		return (Integer) sessionFactory.getCurrentSession().save(student);

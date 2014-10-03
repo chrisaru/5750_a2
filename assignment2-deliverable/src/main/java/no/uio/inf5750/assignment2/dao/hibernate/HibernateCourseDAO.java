@@ -14,8 +14,18 @@ public class HibernateCourseDAO implements CourseDAO {
     
 	static Logger logger = Logger.getLogger(HibernateCourseDAO.class);
     private SessionFactory sessionFactory;
+    
+    public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+    
 	@Override
 	public int saveCourse(Course course) {
+		System.out.println(sessionFactory);
 		return (Integer) sessionFactory.getCurrentSession().save(course);
 	}
 

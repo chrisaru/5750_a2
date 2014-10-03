@@ -13,6 +13,15 @@ import no.uio.inf5750.assignment2.model.Degree;
 public class HibernateDegreeDAO implements DegreeDAO{
 	static Logger logger = Logger.getLogger(HibernateDegreeDAO.class);
     private SessionFactory sessionFactory;
+    
+    public SessionFactory getSessionFactory() {
+ 		return sessionFactory;
+ 	}
+
+ 	public void setSessionFactory(SessionFactory sessionFactory) {
+ 		this.sessionFactory = sessionFactory;
+ 	}
+    
 	@Override
 	public int saveDegree(Degree degree) {
 		return (Integer) sessionFactory.getCurrentSession().save(degree);
