@@ -38,12 +38,20 @@ public class HibernateCourseDAO implements CourseDAO {
 
 	@Override
 	public Course getCourseByCourseCode(String courseCode) {
-		return (Course) sessionFactory.getCurrentSession().get( Course.class, courseCode );
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "from Course where courseCode = :courseCode";
+		Query query = session.createQuery(hql);
+		query.setString("courseCode", courseCode);
+		return (Course) query.uniqueResult();
 	}
 
 	@Override
 	public Course getCourseByName(String name) {
-		return (Course) sessionFactory.getCurrentSession().get( Course.class, name );
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "from Course where name = :name";
+		Query query = session.createQuery(hql);
+		query.setString("name", name);
+		return (Course) query.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")

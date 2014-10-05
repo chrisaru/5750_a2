@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import no.uio.inf5750.assignment2.dao.DegreeDAO;
+import no.uio.inf5750.assignment2.model.Course;
 import no.uio.inf5750.assignment2.model.Degree;
 
 public class HibernateDegreeDAO implements DegreeDAO{
@@ -36,7 +37,11 @@ public class HibernateDegreeDAO implements DegreeDAO{
 
 	@Override
 	public Degree getDegreeByType(String type) {
-		return (Degree) sessionFactory.getCurrentSession().get(Degree.class, type);
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "from Degree where type = :type";
+		Query query = session.createQuery(hql);
+		query.setString("type", type);
+		return (Degree) query.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")

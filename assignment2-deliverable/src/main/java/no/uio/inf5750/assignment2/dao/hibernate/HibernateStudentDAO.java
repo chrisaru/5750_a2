@@ -3,11 +3,13 @@ package no.uio.inf5750.assignment2.dao.hibernate;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.annotations.Entity;
 
 import no.uio.inf5750.assignment2.dao.StudentDAO;
+import no.uio.inf5750.assignment2.model.Course;
 import no.uio.inf5750.assignment2.model.Student;
 
 public class HibernateStudentDAO implements StudentDAO {
@@ -26,7 +28,6 @@ public class HibernateStudentDAO implements StudentDAO {
 	@Override
 	public int saveStudent(Student student) {
 		int ret =  (Integer) sessionFactory.getCurrentSession().save(student);
-		System.out.println("ret = " + ret);
 		sessionFactory.getCurrentSession().flush();
 		return ret;
 	}
@@ -38,7 +39,11 @@ public class HibernateStudentDAO implements StudentDAO {
 
 	@Override
 	public Student getStudentByName(String name) {
-		return (Student) sessionFactory.getCurrentSession().get(Student.class,name);
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "from Student where name = :name";
+		Query query = session.createQuery(hql);
+		query.setString("name", name);
+		return (Student) query.uniqueResult();
 	}
 
 	@Override
