@@ -24,7 +24,9 @@ public class HibernateDegreeDAO implements DegreeDAO{
     
 	@Override
 	public int saveDegree(Degree degree) {
-		return (Integer) sessionFactory.getCurrentSession().save(degree);
+		int ret = (Integer) sessionFactory.getCurrentSession().save(degree);
+		sessionFactory.getCurrentSession().flush();
+		return ret;
 	}
 
 	@Override

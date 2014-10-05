@@ -1,6 +1,7 @@
 package no.uio.inf5750.assignment2.service.impl;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 	static Logger logger = Logger.getLogger(HibernateStudentDAO.class);
     CourseDAO c;
     DegreeDAO d;
+    StudentDAO s;
     public CourseDAO getC() {
 		return c;
 	}
@@ -46,12 +48,15 @@ public class DefaultStudentSystem implements StudentSystem  {
 		this.s = s;
 	}
 
-	StudentDAO s;
+	
     
     
 	@Override
 	public int addCourse(String courseCode, String name) {
 		Course course = new Course(courseCode, name);
+		if(c.getAllCourses().contains(course)) {
+			return 0;
+		}
 		return c.saveCourse(course);
 	}
 
@@ -67,7 +72,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 		}
 		cs.setId(courseId);
 		cs.setName(name);
-		cs.setName(name);
+		cs.setCourseCode(courseCode);
 		//no need ? check for error ?
 		c.saveCourse(cs);
 	}
@@ -93,6 +98,19 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public void delCourse(int courseId) {
+		Course cs = c.getCourse(courseId);
+		Set<Student> studs = cs.getAttendants();
+		for(Student st : studs) {
+			st.getCourses().remove(cs);
+			s.saveStudent(st);
+		}
+		Collection<Degree> degrees = d.getAllDegrees();
+		for(Degree de : degrees) {
+			if(de.getRequiredCourses().contains(cs)) {
+				de.getRequiredCourses().remove(cs);
+				d.saveDegree(de);
+			}
+		}
 		c.delCourse(c.getCourse(courseId));
 	}
 
@@ -109,12 +127,13 @@ public class DefaultStudentSystem implements StudentSystem  {
 			return;
 		}
 		Set<Student> sSet = cs.getAttendants();
-		//Set<Course> cSet = st.getCourses();
+		Set<Course> cSet = st.getCourses();
 		sSet.add(st);
-		//cSet.add(cs);
+		cSet.add(cs);
 		cs.setAttendants(sSet);
 		c.saveCourse(cs);
-		//st.setCourses(cSet);
+		st.setCourses(cSet);
+		s.saveStudent(st);
 	}
 
 	@Override
@@ -130,12 +149,13 @@ public class DefaultStudentSystem implements StudentSystem  {
 			return;
 		}
 		Set<Student> sSet = cs.getAttendants();
-		//Set<Course> cSet = st.getCourses();
+		Set<Course> cSet = st.getCourses();
 		sSet.remove(st);
-		//cSet.add(cs);
+		cSet.add(cs);
 		cs.setAttendants(sSet);
 		c.saveCourse(cs);
-		//st.setCourses(cSet);
+		st.setCourses(cSet);
+		s.saveStudent(st);
 	}
 
 	@Override
@@ -219,7 +239,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public void updateStudent(int studentId, String name) {
-		Student st = getStudent(studentId);
+		Student st = s.getStudent(studentId);
 		if(st == null) {
 			System.out.println("Error in updatestud");
 		}
@@ -244,20 +264,30 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public void delStudent(int studentId) {
-		Student st = getStudent(studentId);
+		Student st = s.getStudent(studentId);
 		if(st == null) {
 			System.out.println("ERROR in deldegree");
+			return;
+		}
+		Collection<Course> courses = c.getAllCourses();
+		Iterator<Course> it = courses.iterator();
+		while(it.hasNext()) {
+			Course cs = it.next();
+			if(cs.getAttendants().contains(st)) {
+				cs.getAttendants().remove(st);
+				c.saveCourse(cs);
+			}
 		}
 		s.delStudent(st);
 	}
 
 	@Override
 	public void addDegreeToStudent(int studentId, int degreeId) {
-		Student st = getStudent(studentId);
+		Student st = s.getStudent(studentId);
 		if(st == null) {
 			System.out.println("WRONG studid IN Add_degree_to_stud");
 		}
-		Degree de = getDegree(degreeId);
+		Degree de = d.getDegree(degreeId);
 		if(de == null) {
 			System.out.println("WRONG degreeid IN Add_degree_to_student");
 		}
@@ -287,8 +317,15 @@ public class DefaultStudentSystem implements StudentSystem  {
 
 	@Override
 	public boolean studentFulfillsDegreeRequirements(int studentId, int degreeId) {
-		// TODO Auto-generated method stub
-		return false;
+		Student st = s.getStudent(studentId);
+		if(st == null) {
+			System.out.println("ERROR with studentid in fulfill");
+		}
+		Degree de = d.getDegree(degreeId);
+		if(de == null) {
+			System.out.println("ERROR with degree id in fulfill");
+		}
+		return st.getCourses().containsAll(de.getRequiredCourses());
 	}
 	
 }

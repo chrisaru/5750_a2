@@ -25,7 +25,10 @@ public class HibernateStudentDAO implements StudentDAO {
     
 	@Override
 	public int saveStudent(Student student) {
-		return (Integer) sessionFactory.getCurrentSession().save(student);
+		int ret =  (Integer) sessionFactory.getCurrentSession().save(student);
+		System.out.println("ret = " + ret);
+		sessionFactory.getCurrentSession().flush();
+		return ret;
 	}
 
 	@Override
