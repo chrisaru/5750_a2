@@ -42,6 +42,7 @@ public class HibernateCourseDAO implements CourseDAO {
 		String hql = "from Course where courseCode = :courseCode";
 		Query query = session.createQuery(hql);
 		query.setString("courseCode", courseCode);
+		//we only want one course, since the codes are unique we can only find one as well.
 		return (Course) query.uniqueResult();
 	}
 

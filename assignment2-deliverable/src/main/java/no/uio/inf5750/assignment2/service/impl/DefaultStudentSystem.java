@@ -54,9 +54,6 @@ public class DefaultStudentSystem implements StudentSystem  {
 	@Override
 	public int addCourse(String courseCode, String name) {
 		Course course = new Course(courseCode, name);
-		if(c.getAllCourses().contains(course)) {
-			return 0;
-		}
 		return c.saveCourse(course);
 	}
 
@@ -70,10 +67,8 @@ public class DefaultStudentSystem implements StudentSystem  {
 			logger.error("ERROR,  course did not exist");
 			return;
 		}
-		cs.setId(courseId);
 		cs.setName(name);
 		cs.setCourseCode(courseCode);
-		//no need ? check for error ?
 		c.saveCourse(cs);
 	}
 	@Override
@@ -100,11 +95,13 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void delCourse(int courseId) {
 		Course cs = c.getCourse(courseId);
 		Set<Student> studs = cs.getAttendants();
+		//need to remove the course from all students that has it
 		for(Student st : studs) {
 			st.getCourses().remove(cs);
 			s.saveStudent(st);
 		}
 		Collection<Degree> degrees = d.getAllDegrees();
+		//need to remove the course from degrees that require it
 		for(Degree de : degrees) {
 			if(de.getRequiredCourses().contains(cs)) {
 				de.getRequiredCourses().remove(cs);
@@ -118,21 +115,19 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void addAttendantToCourse(int courseId, int studentId) {
 		Course cs = c.getCourse(courseId);
 		if(cs == null) {
-			System.out.println("ERROR\n");
+			logger.error("Invalid courseId");
 			return;
 		}
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("ERROR\n");
+			logger.error("Invalid studentID");
 			return;
 		}
 		Set<Student> sSet = cs.getAttendants();
 		Set<Course> cSet = st.getCourses();
 		sSet.add(st);
 		cSet.add(cs);
-		cs.setAttendants(sSet);
 		c.saveCourse(cs);
-		st.setCourses(cSet);
 		s.saveStudent(st);
 	}
 
@@ -140,21 +135,20 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void removeAttendantFromCourse(int courseId, int studentId) {
 		Course cs = c.getCourse(courseId);
 		if(cs == null) {
-			System.out.println("ERROR\n");
+			logger.error("invalid courseid");
 			return;
 		}
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("ERROR\n");
+			logger.error("invalid studentid");
 			return;
 		}
 		Set<Student> sSet = cs.getAttendants();
 		Set<Course> cSet = st.getCourses();
 		sSet.remove(st);
-		cSet.add(cs);
-		cs.setAttendants(sSet);
+		//also has to remove course from student
+		cSet.remove(cs);
 		c.saveCourse(cs);
-		st.setCourses(cSet);
 		s.saveStudent(st);
 	}
 
@@ -168,7 +162,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void updateDegree(int degreeId, String type) {
 		Degree de = getDegree(degreeId);
 		if(de == null) {
-			System.out.println("Error in updatedegree");
+			logger.error("invalid degreeid");
 		}
 		de.setType(type);
 		d.saveDegree(de);
@@ -193,7 +187,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void delDegree(int degreeId) {
 		Degree de = d.getDegree(degreeId);
 		if(de == null) {
-			System.out.println("ERROR in deldegree");
+			logger.error("Invalid degreeid");
 			return;
 		}
 		d.delDegree(de);
@@ -203,15 +197,14 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void addRequiredCourseToDegree(int degreeId, int courseId) {
 		Degree de = getDegree(degreeId);
 		if(de == null) {
-			System.out.println("WRONG DEGREEID IN Add_req_to_course");
+			logger.error("invalid degreeid");
 		}
 		Course cs = getCourse(courseId);
 		if(cs == null) {
-			System.out.println("WRONG courseid IN Add_req_to_course");
+			logger.error("invalid courseid");
 		}
 		Set<Course> courses = de.getRequiredCourses();
 		courses.add(cs);
-		de.setRequiredCourses(courses);
 		d.saveDegree(de);
 	}
 
@@ -219,15 +212,14 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void removeRequiredCourseFromDegree(int degreeId, int courseId) {
 		Degree de = getDegree(degreeId);
 		if(de == null) {
-			System.out.println("WRONG DEGREEID IN rem_req_to_course");
+			logger.error("invalid degreeid");
 		}
 		Course cs = getCourse(courseId);
 		if(cs == null) {
-			System.out.println("WRONG courseid IN rem_req_to_course");
+			logger.error("invalid courseid");
 		}
 		Set<Course> courses = de.getRequiredCourses();
 		courses.remove(cs);
-		de.setRequiredCourses(courses);
 		d.saveDegree(de);
 	}
 
@@ -241,7 +233,7 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void updateStudent(int studentId, String name) {
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("Error in updatestud");
+			logger.error("invalid studentid");
 		}
 		st.setName(name);
 		s.saveStudent(st);
@@ -266,11 +258,12 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void delStudent(int studentId) {
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("ERROR in deldegree");
+			logger.error("invalid studentid");
 			return;
 		}
 		Collection<Course> courses = c.getAllCourses();
 		Iterator<Course> it = courses.iterator();
+		//need to remove the student from all the courses it's enrolled in
 		while(it.hasNext()) {
 			Course cs = it.next();
 			if(cs.getAttendants().contains(st)) {
@@ -285,16 +278,15 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void addDegreeToStudent(int studentId, int degreeId) {
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("WRONG studid IN Add_degree_to_stud");
+			logger.error("invalid studentid");
 		}
 		Degree de = d.getDegree(degreeId);
 		if(de == null) {
-			System.out.println("WRONG degreeid IN Add_degree_to_student");
+			logger.error("invalid degreeid");
 		}
 		
 		Set<Degree> degrees = st.getDegrees();
 		degrees.add(de);
-		st.setDegrees(degrees);
 		s.saveStudent(st);
 	}
 
@@ -302,16 +294,15 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public void removeDegreeFromStudent(int studentId, int degreeId) {
 		Student st = getStudent(studentId);
 		if(st == null) {
-			System.out.println("WRONG studid IN Add_degree_to_stud");
+			logger.error("invalid studentid");
 		}
 		Degree de = getDegree(degreeId);
 		if(de == null) {
-			System.out.println("WRONG degreeid IN Add_degree_to_student");
+			logger.error("invalid degreeid");
 		}
 		
 		Set<Degree> degrees = st.getDegrees();
-		degrees.add(de);
-		st.setDegrees(degrees);
+		degrees.remove(de);
 		s.saveStudent(st);
 	}
 
@@ -319,11 +310,11 @@ public class DefaultStudentSystem implements StudentSystem  {
 	public boolean studentFulfillsDegreeRequirements(int studentId, int degreeId) {
 		Student st = s.getStudent(studentId);
 		if(st == null) {
-			System.out.println("ERROR with studentid in fulfill");
+			logger.error("invalid studentid");
 		}
 		Degree de = d.getDegree(degreeId);
 		if(de == null) {
-			System.out.println("ERROR with degree id in fulfill");
+			logger.error("invalid degreeid");
 		}
 		return st.getCourses().containsAll(de.getRequiredCourses());
 	}

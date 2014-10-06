@@ -6,10 +6,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.annotations.Entity;
-
 import no.uio.inf5750.assignment2.dao.StudentDAO;
-import no.uio.inf5750.assignment2.model.Course;
 import no.uio.inf5750.assignment2.model.Student;
 
 public class HibernateStudentDAO implements StudentDAO {
@@ -46,8 +43,8 @@ public class HibernateStudentDAO implements StudentDAO {
 		return (Student) query.uniqueResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-
 	public Collection<Student> getAllStudents() {
 		Session session = sessionFactory.getCurrentSession();
 		return (Collection<Student>) session.createQuery("from Student").list();

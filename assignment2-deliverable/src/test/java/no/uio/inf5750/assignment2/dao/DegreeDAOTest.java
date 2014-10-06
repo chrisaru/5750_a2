@@ -2,16 +2,9 @@ package no.uio.inf5750.assignment2.dao;
 
 import static junit.framework.Assert.*;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-
 import no.uio.inf5750.assignment2.model.Degree;
-import no.uio.inf5750.assignment2.model.Student;
-
-import org.hibernate.mapping.Set;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

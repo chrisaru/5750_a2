@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import no.uio.inf5750.assignment2.dao.DegreeDAO;
-import no.uio.inf5750.assignment2.model.Course;
 import no.uio.inf5750.assignment2.model.Degree;
 
 public class HibernateDegreeDAO implements DegreeDAO{
@@ -56,8 +55,6 @@ public class HibernateDegreeDAO implements DegreeDAO{
 		Session session = sessionFactory.getCurrentSession();
 		session.delete(degree);
 		session.flush();
-	//	session.createQuery("delete from Courses where course_id = " + degree.getId());
-		//også slette fra lister som har denne ? 
 	}
 
 }
